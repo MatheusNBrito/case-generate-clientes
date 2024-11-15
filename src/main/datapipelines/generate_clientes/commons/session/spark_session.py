@@ -9,6 +9,6 @@ class SparkSessionWrapper:
             .config("spark.hadoop.io.nativeio", "false") \
             .master(master) \
             .getOrCreate()
-
+        
     def stop(self):
         self.spark.stop()
