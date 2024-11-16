@@ -32,7 +32,7 @@ class ClienteJob:
 
     # Função para salvar os dados
     def save_data(self, df, output_paths):
-        df.write.parquet(output_paths["CLIENTES_PATH"])
+        df.write.parquet(output_paths)
 
     # Função para aplicar as transformações
     def generate_clientes(self, clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df):
@@ -46,30 +46,37 @@ class ClienteJob:
 
     # Função principal
     def run_job(self):
-        # Lê o arquivo de configuração
-        conf = configparser.ConfigParser()
-        conf.read('C:/Projetos/panvel-generate-clientes/src/main/datapipelines/generate_clientes/resources/aplication.conf')
+        try:
+            # Lê o arquivo de configuração
+            conf = configparser.ConfigParser()
+            conf.read('C:/Projetos/panvel-generate-clientes/src/main/datapipelines/generate_clientes/resources/aplication.conf')
 
-        # Acessa as configurações
-        raw_tables = {
-            "CLIENTES_PATH": conf["input_paths"]["raw_tables.CLIENTES_PATH"],
-            "CLIENTES_OPT_PATH": conf["input_paths"]["raw_tables.CLIENTES_OPT_PATH"],
-            "ENDERECOS_CLIENTES_PATH": conf["input_paths"]["raw_tables.ENDERECOS_CLIENTES_PATH"]
-        }
-        output_path_clientes = conf["output_paths"]["CLIENTES_PATH"]
+            # Acessa as configurações
+            raw_tables = {
+                "CLIENTES_PATH": conf["input_paths"]["raw_tables.CLIENTES_PATH"],
+                "CLIENTES_OPT_PATH": conf["input_paths"]["raw_tables.CLIENTES_OPT_PATH"],
+                "ENDERECOS_CLIENTES_PATH": conf["input_paths"]["raw_tables.ENDERECOS_CLIENTES_PATH"]
+            }
+            output_path_clientes = conf["output_paths"]["CLIENTES_PATH"]
+            print(f"CLIENTES_PATH: {raw_tables['CLIENTES_PATH']}")
 
-        # Carrega os dados
-        clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df = self.load_data(raw_tables)
+            # Carrega os dados
+            clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df = self.load_data(raw_tables)
 
-        # Aplica as transformações
-        final_clientes_df = self.generate_clientes(clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df)
+            # Aplica as transformações
+            final_clientes_df = self.generate_clientes(clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df)
 
-        # Salva os dados
-        self.save_data(final_clientes_df, output_path_clientes)
+            # Salva os dados
+            self.save_data(final_clientes_df, output_path_clientes)
 
-def stop(self):
-    # Fecha a sessão Spark
-    self.spark_session_wrapper.stop()
+        except Exception as e:
+            print(f"Erro durante a execução do job: {e}")
+            raise  # Propaga o erro para análise
+
+    def stop(self):
+        # Fecha a sessão Spark
+        if self.spark:
+            self.spark.stop()
 
 
 if __name__ == "__main__":
