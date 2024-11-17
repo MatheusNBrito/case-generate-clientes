@@ -1,20 +1,9 @@
-import sys
-import os
-
-# Determina o caminho absoluto do diretório raiz do projeto
-base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
-
-# Adiciona o diretório raiz ao sys.path se não estiver presente
-if base_path not in sys.path:
-    sys.path.insert(0, base_path)
-
-print("Base Path Adicionado ao sys.path:", base_path)
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 import configparser
-from datapipelines.generate_clientes.commons.session.spark_session import SparkSessionWrapper  
-from datapipelines.generate_clientes.books.variables import Variables
+from main.datapipelines.generate_clientes.commons.session.spark_session import SparkSessionWrapper  
+from main.datapipelines.generate_clientes.books.variables import Variables
+
  
 
 class ClienteJob:

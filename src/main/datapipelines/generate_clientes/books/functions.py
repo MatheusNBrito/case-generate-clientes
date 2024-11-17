@@ -1,6 +1,6 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, current_date, when, datediff, floor, trim
-from datapipelines.generate_clientes.books import constants
+from main.datapipelines.generate_clientes.books import constants
 from typing import List 
 
 class Functions:

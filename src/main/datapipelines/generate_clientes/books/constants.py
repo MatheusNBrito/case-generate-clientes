@@ -1,5 +1,3 @@
-# datapipelines/generateClientes/books/constants.py
-
 # Final Columns
 CODIGO_CLIENTE = "codigo_cliente"
 DATA_NASCIMENTO = "data_nascimento"

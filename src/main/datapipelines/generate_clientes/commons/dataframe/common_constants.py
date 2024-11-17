@@ -1,5 +1,3 @@
-# datapipelines/generateClientes/commons/dataframe/common_constants.py
-
 class CommonConstants:
     # Constantes do arquivo de configuração
     CLIENTES_RAW_PATH = "input_paths.raw_tables.CLIENTES_PATH"

@@ -1,6 +1,6 @@
 from pyspark.sql import functions as F
 from pyspark.sql.types import StringType, DateType, IntegerType
-from datapipelines.generate_clientes.books import constants
+from main.datapipelines.generate_clientes.books import constants
 from pyspark.sql import SparkSession
 
 # Inicialização do SparkSession

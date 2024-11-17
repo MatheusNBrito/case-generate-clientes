@@ -1,0 +1,7 @@
+README.md
+setup.py
+src/panvel_generate_clientes.egg-info/PKG-INFO
+src/panvel_generate_clientes.egg-info/SOURCES.txt
+src/panvel_generate_clientes.egg-info/dependency_links.txt
+src/panvel_generate_clientes.egg-info/requires.txt
+src/panvel_generate_clientes.egg-info/top_level.txt
