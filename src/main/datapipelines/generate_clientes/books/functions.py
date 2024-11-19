@@ -2,6 +2,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, current_date, when, datediff, floor, trim
 from main.datapipelines.generate_clientes.books import constants
 from typing import List 
+from pyspark.sql import functions as F
 
 class Functions:
 
@@ -12,7 +13,7 @@ class Functions:
     def create_idade_col(self, df: DataFrame) -> DataFrame:
         return df.withColumn(
             constants.IDADE,
-            floor(datediff(current_date(), col(constants.DATA_NASCIMENTO)) / 365).cast("int")
+            (F.floor(F.datediff(F.current_date(), F.col(constants.DATA_NASCIMENTO)) / 365)).cast("int")
         )
 
     def treat_flag_vars(self, column_name: str):
@@ -23,9 +24,11 @@ class Functions:
 
     def minus2_flag_vars_treatment(self, df: DataFrame) -> DataFrame:
         return df.na.fill(-2, self.minus2_flag_vars_seq())
-
-    def minus2_string_treatment(self, minus2_seq: List[str], df: DataFrame) -> DataFrame:
+    
+    @staticmethod
+    def minus2_string_treatment(minus2_seq: List[str], df: DataFrame) -> DataFrame:
         return df.na.fill("-2", minus2_seq)
+
 
     def minus1_treat_null(self, df: DataFrame) -> DataFrame:
         return (

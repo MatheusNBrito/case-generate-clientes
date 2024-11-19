@@ -3,21 +3,28 @@ from pyspark.sql.functions import col
 import configparser
 from main.datapipelines.generate_clientes.commons.session.spark_session import SparkSessionWrapper  
 from main.datapipelines.generate_clientes.books.variables import Variables
-
- 
+from main.datapipelines.generate_clientes.books.functions import Functions
+from pyspark.sql import DataFrame
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col
 
 class ClienteJob:
     def __init__(self):
         # Inicializa a sessão Spark através do wrapper
         self.spark_session_wrapper = SparkSessionWrapper()
         self.spark = self.spark_session_wrapper.spark
+        print(self.spark)
 
     # Função para carregar os dados
     def load_data(self, raw_tables):
         clientes_raw_df = self.spark.read.parquet(raw_tables["CLIENTES_PATH"]).select(*Variables.clientes_col_seq)
         clientes_opt_raw_df = self.spark.read.json(raw_tables["CLIENTES_OPT_PATH"]).select(*Variables.clientes_opt_col_seq)
         enderecos_clientes_raw_df = self.spark.read.parquet(raw_tables["ENDERECOS_CLIENTES_PATH"]).select(*Variables.enderecos_clientes_col_seq)
+        clientes_raw_df.printSchema()
+        clientes_opt_raw_df.printSchema()
+        enderecos_clientes_raw_df.printSchema()
         return clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df
+        
 
     # Função para salvar os dados
     def save_data(self, df, output_paths):
@@ -25,10 +32,27 @@ class ClienteJob:
 
     # Função para aplicar as transformações
     def generate_clientes(self, clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df):
-        clientes_transformed_df = clientes_raw_df.dropDuplicates().filter(col("CODIGO_CLIENTE").isNotNull())
-        clientes_opt_transformed_df = clientes_opt_raw_df.dropDuplicates().filter(col("CODIGO_CLIENTE").isNotNull())
-        enderecos_clientes_transformed_df = enderecos_clientes_raw_df.dropDuplicates().filter(col("CODIGO_CLIENTE").isNotNull())
 
+        # Tratamento de clientes_raw_df
+        print("Iniciando transformação de clientes_raw_df")
+        clientes_transformed_df = clientes_raw_df.dropDuplicates().filter(col("CODIGO_CLIENTE").isNotNull())
+        string_columns_clientes = [col_name for col_name in clientes_transformed_df.columns if col_name != "data_nascimento"]
+        clientes_transformed_df = Functions.minus2_string_treatment(string_columns_clientes, clientes_transformed_df)
+        clientes_transformed_df.show()
+
+        # Tratamento de clientes_opt_raw_df
+        print("Iniciando transformação de clientes_opt_raw_df")
+        clientes_opt_transformed_df = clientes_opt_raw_df.dropDuplicates().filter(col("CODIGO_CLIENTE").isNotNull())
+        clientes_opt_transformed_df = Functions.minus2_string_treatment(clientes_opt_transformed_df.columns, clientes_opt_transformed_df)
+        clientes_opt_transformed_df.show()
+
+        # Tratamento de enderecos_clientes_raw_df
+        print("Iniciando transformação de enderecos_clientes_raw_df")
+        enderecos_clientes_transformed_df = enderecos_clientes_raw_df.dropDuplicates().filter(col("CODIGO_CLIENTE").isNotNull())
+        enderecos_clientes_transformed_df = Functions.minus2_string_treatment(enderecos_clientes_transformed_df.columns, enderecos_clientes_transformed_df)
+        enderecos_clientes_transformed_df.show()
+
+        # União dos DataFrames tratados
         final_clientes_df = clientes_transformed_df.join(clientes_opt_transformed_df, on="CODIGO_CLIENTE", how="left") \
                                                    .join(enderecos_clientes_transformed_df, on="CODIGO_CLIENTE", how="left")
         return final_clientes_df
