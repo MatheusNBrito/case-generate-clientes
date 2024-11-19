@@ -21,7 +21,7 @@ class ClienteJob:
 
     # Função para salvar os dados
     def save_data(self, df, output_paths):
-        df.write.parquet(output_paths)
+        df.write.mode("overwrite").parquet(output_paths)
 
     # Função para aplicar as transformações
     def generate_clientes(self, clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df):

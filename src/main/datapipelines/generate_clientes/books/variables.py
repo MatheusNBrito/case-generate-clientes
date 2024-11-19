@@ -1,25 +1,16 @@
 from pyspark.sql import functions as F
 from pyspark.sql.types import StringType, DateType, IntegerType
 from main.datapipelines.generate_clientes.books import constants
+from main.datapipelines.generate_clientes.books.functions import Functions
+
 from pyspark.sql import SparkSession
 
 # Inicialização do SparkSession
 spark = SparkSession.builder.appName("GenerateClientesJob").getOrCreate()
-
-class Functions:
-    @staticmethod
-    def treat_flag_vars(col_name):
-        # Quando o valor for positivo retorna 1 
-        return F.when(F.col(col_name) == 'S', 1).otherwise(0)
-    
-    @staticmethod
-    def trim_string(col_name):
-        # Remove os espaços em branco ao fim de um string
-        return F.trim(F.col(col_name))
     
 class Variables:
     # Referência para funções auxiliares
-    functions = Functions
+    functions = Functions()
 
     # clientesColSeq - colunas da tabela "clientes_raw"
     clientes_col_seq = [
@@ -47,16 +38,16 @@ class Variables:
 
     # flagVarsRules - regras de criação de variáveis de flags
     flag_vars_rules = [
-        (constants.FLAG_LGPD_CALL, Functions.treat_flag_vars(constants.FLAG_LGPD_CALL).cast(IntegerType())),
-        (constants.FLAG_LGPD_SMS, Functions.treat_flag_vars(constants.FLAG_LGPD_SMS).cast(IntegerType())),
-        (constants.FLAG_LGPD_EMAIL, Functions.treat_flag_vars(constants.FLAG_LGPD_EMAIL).cast(IntegerType())),
-        (constants.FLAG_LGPD_PUSH, Functions.treat_flag_vars(constants.FLAG_LGPD_PUSH).cast(IntegerType()))
+        (constants.FLAG_LGPD_CALL, functions.treat_flag_vars(constants.FLAG_LGPD_CALL).cast(IntegerType())),
+        (constants.FLAG_LGPD_SMS, functions.treat_flag_vars(constants.FLAG_LGPD_SMS).cast(IntegerType())),
+        (constants.FLAG_LGPD_EMAIL, functions.treat_flag_vars(constants.FLAG_LGPD_EMAIL).cast(IntegerType())),
+        (constants.FLAG_LGPD_PUSH, functions.treat_flag_vars(constants.FLAG_LGPD_PUSH).cast(IntegerType()))
     ]
 
     # endVarRules - regras de transformação para cidade e estado
     end_var_rules = [
-        (constants.CIDADE, Functions.trim_string(constants.CIDADE)),
-        (constants.UF, Functions.trim_string(constants.UF))
+        (constants.CIDADE, functions.trim_string(constants.CIDADE)),
+        (constants.UF, functions.trim_string(constants.UF))
     ]
 
     # Funções para sequências de variáveis

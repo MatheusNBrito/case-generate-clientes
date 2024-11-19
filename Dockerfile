@@ -22,12 +22,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Instalando Java (necessário para o PySpark)
 RUN apt-get update && apt-get install -y openjdk-17-jre
 
-# Instalando Spark (ajuste a versão conforme necessário)
-RUN curl -sL https://archive.apache.org/dist/spark/spark-3.5.3/spark-3.5.3-bin-hadoop3.tgz | tar -xz -C /opt/
-ENV SPARK_HOME=/opt/spark-3.5.3-bin-hadoop3.2
+# Definindo variáveis de ambiente para Java
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Instalando o Spark (ajuste o caminho conforme necessário)
+RUN curl -sL https://archive.apache.org/dist/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz | tar -xz -C /opt/
+ENV SPARK_HOME=/opt/spark-3.4.3-bin-hadoop3
 ENV PATH=$SPARK_HOME/bin:$PATH
 
-# Instalando o Hadoop (ajuste a versão conforme necessário)
+# Instalando o Hadoop (ajuste o caminho conforme necessário)
 RUN curl -sL https://archive.apache.org/dist/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz | tar -xz -C /opt/
 ENV HADOOP_HOME=/opt/hadoop-3.4.0
 ENV PATH=$HADOOP_HOME/bin:$PATH
