@@ -4,6 +4,7 @@ import configparser
 from main.datapipelines.generate_clientes.commons.session.spark_session import SparkSessionWrapper  
 from main.datapipelines.generate_clientes.books.variables import Variables
 from main.datapipelines.generate_clientes.books.functions import Functions
+from main.datapipelines.generate_clientes.books.transformations import Transformations
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col
@@ -30,7 +31,7 @@ class ClienteJob:
     def save_data(self, df, output_paths):
         df.write.mode("overwrite").parquet(output_paths)
 
-    # Função para aplicar as transformações
+    """# Função principal
     def generate_clientes(self, clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df):
 
         # Tratamento de clientes_raw_df
@@ -55,7 +56,7 @@ class ClienteJob:
         # União dos DataFrames tratados
         final_clientes_df = clientes_transformed_df.join(clientes_opt_transformed_df, on="CODIGO_CLIENTE", how="left") \
                                                    .join(enderecos_clientes_transformed_df, on="CODIGO_CLIENTE", how="left")
-        return final_clientes_df
+        return final_clientes_df """
 
     # Função principal
     def run_job(self):
@@ -77,7 +78,7 @@ class ClienteJob:
             clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df = self.load_data(raw_tables)
 
             # Aplica as transformações
-            final_clientes_df = self.generate_clientes(clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df)
+            final_clientes_df = Transformations.generate_clientes(clientes_raw_df, clientes_opt_raw_df, enderecos_clientes_raw_df)
 
             # Salva os dados
             self.save_data(final_clientes_df, output_path_clientes)
