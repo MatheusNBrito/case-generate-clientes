@@ -57,4 +57,17 @@ class Transformations:
         final_clientes_df = Functions.minus1_treat_null(final_clientes_df)
         final_clientes_df = Functions.filter_null_rows(final_clientes_df)
 
+        final_clientes_df = final_clientes_df.select(
+            constants.CODIGO_CLIENTE,
+            constants.DATA_NASCIMENTO,
+            constants.IDADE,
+            constants.SEXO,
+            constants.UF,
+            constants.CIDADE,
+            constants.ESTADO_CIVIL,
+            constants.FLAG_LGPD_CALL,
+            constants.FLAG_LGPD_SMS,
+            constants.FLAG_LGPD_EMAIL,
+            constants.FLAG_LGPD_PUSH
+        )
         return final_clientes_df
